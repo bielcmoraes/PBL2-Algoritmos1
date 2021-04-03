@@ -1,5 +1,5 @@
 from pynput.keyboard import Listener
-verdade = True
+
 
 def Capturar(tecla):
     tecla = str(tecla)
