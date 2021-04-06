@@ -1,12 +1,15 @@
-from meteoro import*
+from tela import*
+from random import randrange
+import os        
 from time import sleep
+import keyboard
 
-numero_linhas = 20
-numero_colunas = 20
 game_on = True
+numero_linhas = 10
+numero_colunas = 51
+formato_meteoro = '0'
+formato_nave = '+'
+formato_tiro = 'o'
 
-while game_on:
-    for i in range(2):
-        movimento_meteoro(numero_linhas, numero_colunas, formato_meteoro())
-        print("5 segundos")
-        sleep(5)
+
+movimento(numero_linhas, numero_colunas, formato_meteoro, desenho_nave(), formato_tiro)
