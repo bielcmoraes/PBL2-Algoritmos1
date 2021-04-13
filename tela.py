@@ -1,28 +1,10 @@
-from random import randrange
+from random import randint
 import os
 from time import sleep
 import keyboard
 
-def desenho_meteoro():
-    desenho = """
-  *** 
- ***** 
-******* 
- ***** 
-  *** 
-"""
-
-    return desenho
-
-def desenho_nave():
-    desenho = '∆'
-    return desenho
-
-
-def tela(numero_linhas, numero_colunas):
-    
+def meteoros(numero_linhas, numero_colunas, posicao, linha_referencia, centro_da_nave, referencia_tiro, projetil):
     tela = [] #Matriz da tela
-    centro_da_tela = (numero_colunas//2) + 1
     vazio = str(' ')
 
     for i in range (numero_linhas):
@@ -32,53 +14,69 @@ def tela(numero_linhas, numero_colunas):
 
         tela.append(linha)
 
+    coluna_referencia = posicao-1 #coluna utilizada para gerar a hitbox do meteoro
+    
+    #Gera formato do meteoro
+    for i in range(coluna_referencia,coluna_referencia + 3): #Laço que gera o retangulo do meteoro
+        if linha_referencia <= numero_linhas:
+            for j in range(0,5):
+                tela[j+linha_referencia][i] = '▪'
+    
+    for i in range(1,4):
+        tela[i + linha_referencia][coluna_referencia-1] = '▪'
+        tela[i + linha_referencia][coluna_referencia+3] = '▪'
+
+    tela[2 + linha_referencia][coluna_referencia-2] = '▪'
+    tela[2 + linha_referencia][coluna_referencia+4] = '▪'
+    
+  
+    #Gera a nave na matriz
+    
+    for i in range(0, 3):
+        if 3 <= centro_da_nave <= numero_colunas-3: # garante que a nave não saia do matriz
+            tela[numero_linhas - 1][centro_da_nave + i] = '█'
+            tela[numero_linhas - 1][centro_da_nave - i] = '█'
+            
+            if i < 2:
+                tela[numero_linhas - 2][centro_da_nave + i] = '█'
+                tela[numero_linhas - 2][centro_da_nave - i] = '█'
+            
+            if i < 1:
+                tela[numero_linhas - 3][centro_da_nave] = '█'
+            
+    #Gera o tiro na matriz
+    for i in range(4, numero_linhas):
+        if 3 <= centro_da_nave <= numero_colunas-3:
+            if keyboard.is_pressed('space'):
+                tela[numero_linhas- i][centro_da_nave] = '|'
+    
+            
     return tela
 
-def movimento(numero_linhas, numero_colunas, formato_meteoro, formato_nave,formato_tiro):
-    centro_da_tela = (numero_colunas//2) + 1
 
-    matriz_tela = tela(numero_linhas, numero_colunas) #tela do game
-    posicao = randrange(0,numero_colunas) #posicao aleatoria que o meteoro aparece na tela
-    matriz_tela[0][posicao] = formato_meteoro #primeira linha da matriz com meteoro em posicao aleatoria
-    matriz_tela [numero_linhas-1][centro_da_tela] = formato_nave #gera a nave na matriz
-    vazio = str('')
+def posicao_aleatoria_meteoro(colunas):
+    posicao = randint(3, colunas-3) #Posição que o centro do meteoro aparece na tela
+    return posicao
 
-    while True:
+#printa a matriz que forma a tela
+def atualiza_tela(matriz_da_tela):
+    tela = matriz_da_tela
+    for linha in tela:
+        print(''.join(linha))
 
-        for linha in matriz_tela:
-                teste = ''.join(linha)
-                teste.replace('\n','')
-                print(teste)
 
-        for i in range(1,numero_linhas):
-            matriz_tela[i-1][posicao] = vazio
-            matriz_tela[i][posicao] = formato_meteoro
-            matriz_tela [numero_linhas-1][centro_da_tela] = formato_nave
-        
-            if keyboard.is_pressed('space'): #atira se apertar espaco
-                matriz_tela[numero_linhas-i][centro_da_tela] = formato_tiro
-                os.system('cls') #limpa o terminal para atualizar a tela
-            os.system('cls')
+def movimento_nave(centro_da_nave):
 
-            if keyboard.is_pressed('left'): #move a nave para esquerda
-                
-                matriz_tela[numero_linhas-1][centro_da_tela] = ''
-                centro_da_tela -= 10
-                matriz_tela[numero_linhas-1][centro_da_tela] = formato_nave
-                os.system("cls")
-            
-            if keyboard.is_pressed('right'): #move a nave para a direita
+    while keyboard.is_pressed('left'):
+        centro_da_nave -= 3
+        return centro_da_nave
+    
+    while keyboard.is_pressed('right'):
+        centro_da_nave += 3
+        return centro_da_nave
+    
+    return centro_da_nave
 
-                matriz_tela[numero_linhas-1][centro_da_tela] = ''
-                centro_da_tela += 10
-                matriz_tela[numero_linhas-1][centro_da_tela] = formato_nave
-                os.system("cls")
-            
-            print('_'*numero_colunas)
-            for linha in matriz_tela:
-                teste = ''.join(linha)
-                teste.replace('\n','')
-                print(teste)
-                sleep(0.016)
-                
-            os.system("cls")
+def projetil():
+    if keyboard.is_pressed('space'):
+        return True
