@@ -1,6 +1,7 @@
 from random import randint
 from time import sleep
 import keyboard
+import os
 
 def gera_matriz(numero_linhas, numero_colunas):
     tela = [] #Matriz da tela
@@ -37,48 +38,44 @@ def nave(numero_linhas, numero_colunas, matriz_vazia, centro_da_nave, ):
                 tela[numero_linhas - 3][centro_da_nave] = '█'
     
     return tela
-def meteoros(numero_linhas, numero_colunas, matriz_nave, posicao, linha_referencia, colisao):
+
+def meteoros(numero_linhas, numero_colunas, matriz_nave, posicao, linha_referencia):
     
     tela = matriz_nave
     coluna_referencia = posicao-1 #coluna utilizada para gerar a hitbox do meteoro
-    
-    if colisao == True:
-        linha_referencia = 0
     
     #Gera formato do meteoro
     for i in range(coluna_referencia,coluna_referencia + 3): #Laço que gera o retangulo do meteoro
         if linha_referencia <= numero_linhas:
             for j in range(0,5):
-                tela[j+linha_referencia][i] = '▪'
+                tela[j+linha_referencia][i] = '█'
     
     for i in range(1,4):
-        tela[i + linha_referencia][coluna_referencia-1] = '▪'
-        tela[i + linha_referencia][coluna_referencia+3] = '▪'
+        tela[i + linha_referencia][coluna_referencia-1] = '█'
+        tela[i + linha_referencia][coluna_referencia+3] = '█'
 
-    tela[2 + linha_referencia][coluna_referencia-2] = '▪'
-    tela[2 + linha_referencia][coluna_referencia+4] = '▪'
+    tela[2 + linha_referencia][coluna_referencia-2] = '█'
+    tela[2 + linha_referencia][coluna_referencia+4] = '█'
     
     return tela
 
 #Gera o tiro na matriz
-def tiro(numero_linhas, numero_colunas, matriz_meteoro, projetil, centro_da_nave):
+def tiro(linha_inicio_tiro, numero_colunas, matriz_meteoro, projetil, centro_da_nave):
 
     tela = matriz_meteoro
-
     if projetil == True:
-        for i in range(4, numero_linhas):
-            if 3 <= centro_da_nave <= numero_colunas-3:
-                if keyboard.is_pressed('space'):
-                    tela[numero_linhas- i][centro_da_nave] = '|'  
-        
+        tela[linha_inicio_tiro][centro_da_nave] = 'o'
+    
     return tela
 
 
 #printa a matriz que forma a tela
 def atualiza_tela(matriz_da_tela):
+    os.system('cls')
     tela = matriz_da_tela
     for linha in tela:
         print(''.join(linha))
+    sleep(0.03)
 
 
 def movimento_nave(centro_da_nave):
@@ -95,7 +92,7 @@ def movimento_nave(centro_da_nave):
 
 def projetil():
 
-    while keyboard.is_pressed('space'):
+    if keyboard.is_pressed('space'):
         return True
     
     return False

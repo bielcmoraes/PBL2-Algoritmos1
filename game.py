@@ -3,56 +3,51 @@ import os
 from time import sleep
 import keyboard
 
-game_on = True
-linhas = 40
-colunas = 65
-linha_inicio_meteoro = 0
-centro_da_nave = (colunas // 2) + 1
-linha_inicio_tiro = linhas - 1
+centro_da_nave = (63 // 2) + 1
 
-while game_on:
-    if not keyboard.is_pressed('esc'):
-        posicao_inicial_meteoro = posicao_aleatoria_meteoro(colunas)
-        
-        for movimento in range(0, linhas-4):
-            clock = movimento % 5 #Clock em 5 que garante que o laço só seja executado nos ranges multipos de 5
-
-            matriz_vazia = gera_matriz(linhas, colunas) #Gera matriz mazia
+def principal(centro_da_nave):
+    game_on = True
+    linhas = 25
+    colunas = 63
+    linha_inicio_tiro = linhas - 4
     
-            centro_da_nave = movimento_nave(centro_da_nave) #retorna a posicao da nave a cada mudança
+    linha_final_meteoro = linhas - 4
+   
+    posicao_inicial_meteoro = posicao_aleatoria_meteoro(colunas)
 
-            linha_inicio_tiro = movimento_nave(centro_da_nave)
+    movimento = 0
+    inicio_meteoro = 0
 
-            controle_nave = movimento_nave(centro_da_nave) #Controla a posição da nave
+    for movimento in range(0, linhas):
 
-            tela_nave = nave(linhas, colunas, matriz_vazia, centro_da_nave) # Gera a nave na tela
+        clock = movimento % 5
 
-            controle_tiro = projetil() #Controla o tiro
+        matriz_vazia = gera_matriz(linhas, colunas) #Gera matriz mazia
+        centro_da_nave = movimento_nave(centro_da_nave) #retorna a posicao da nave a cada mudança
+        posicao_tiro = centro_da_nave
+        tela_nave = nave(linhas, colunas, matriz_vazia, centro_da_nave) # Gera a nave na tela
+        # controle_tiro = projetil() #Controla o tiro
 
-            controle_colisao = colisao(controle_tiro, posicao_inicial_meteoro, centro_da_nave)
+        if clock == 0:
 
-            ultima_tela = tiro(linhas, colunas, tela_nave, controle_tiro, centro_da_nave) #Gera o tiro na tela
+            inicio_meteoro = movimento
+            tela_final = meteoros(linhas, colunas, tela_nave, posicao_inicial_meteoro, inicio_meteoro) #Gera o meteoro na tela
 
-            tela_meteoro = meteoros(linhas, colunas, tela_nave, posicao_inicial_meteoro, linha_inicio_meteoro, controle_colisao) #Gera o meteoro na tela
+            atualiza_tela(tela_final) #Imprime a ultima tela
+            sleep(0.9)
             
-            controle_colisao = colisao(controle_tiro, posicao_inicial_meteoro, centro_da_nave)
+        
+        if 0 <= clock:
+            if linha_inicio_tiro > 1:
 
-            if controle_colisao == True:
-                if clock != 0:
-                    os.system('cls')
-                atualiza_tela(tela_nave) #Imprime a ultima tela
-                sleep(0.3)
-                break
-            
-            else:
+                tela_tiro = tiro(linha_inicio_tiro, colunas, tela_final, projetil(),posicao_tiro) #Gera o tiro na tela
 
-                linha_inicio_meteoro = movimento
+                linha_inicio_tiro -= movimento
+
+                atualiza_tela(tela_final) #Imprime a ultima tela
+    
+    return centro_da_nave
             
-                linha_inicio_tiro += movimento
-                
-                if clock != 0:
-                    os.system('cls')
-                    atualiza_tela(ultima_tela) #Imprime a ultima tela
-                    sleep(0.3)
-    else:
-        game_on = False 
+
+while True:
+    centro_da_nave = principal(centro_da_nave)
