@@ -3,7 +3,13 @@ from time import sleep
 import keyboard
 import os
 
-def gera_matriz(numero_linhas, numero_colunas):
+#Gera a coluna em que o o meteoro aparece
+def posicao_aleatoria_meteoro(colunas):
+    posicao = randint(4, colunas-5) #Posição que o centro do meteoro aparece na tela
+    return posicao
+
+
+def objetos(numero_linhas, numero_colunas, centro_da_nave, posicao_aleatoria_meteoro, linha_referencia, linha_inicio_tiro, tiro_on, coluna_tiro):
     tela = [] #Matriz da tela
     vazio = str(' ')
 
@@ -13,18 +19,8 @@ def gera_matriz(numero_linhas, numero_colunas):
             linha.append(vazio) #elementos que formam as colunas da matriz
 
         tela.append(linha)
-    return tela
-
-#Gera a coluna em que o o meteoro aparece
-def posicao_aleatoria_meteoro(colunas):
-    posicao = randint(3, colunas-3) #Posição que o centro do meteoro aparece na tela
-    return posicao
-
-#Gera a nave na matriz
-def nave(numero_linhas, numero_colunas, matriz_vazia, centro_da_nave, ):
     
-    tela = matriz_vazia
-
+    #Gera a nave na matriz
     for i in range(0, 3):
         if 3 <= centro_da_nave <= numero_colunas-3: # garante que a nave não saia do matriz
             tela[numero_linhas - 1][centro_da_nave + i] = '█'
@@ -36,46 +32,40 @@ def nave(numero_linhas, numero_colunas, matriz_vazia, centro_da_nave, ):
             
             if i < 1:
                 tela[numero_linhas - 3][centro_da_nave] = '█'
-    
-    return tela
-
-def meteoros(numero_linhas, numero_colunas, matriz_nave, posicao, linha_referencia):
-    
-    tela = matriz_nave
-    coluna_referencia = posicao-1 #coluna utilizada para gerar a hitbox do meteoro
+        
+    coluna_referencia = posicao_aleatoria_meteoro-1 #coluna utilizada para gerar a hitbox do meteoro
     
     #Gera formato do meteoro
     for i in range(coluna_referencia,coluna_referencia + 3): #Laço que gera o retangulo do meteoro
         if linha_referencia <= numero_linhas:
             for j in range(0,5):
-                tela[j+linha_referencia][i] = '█'
+                tela[j+linha_referencia][i] = '▣'
     
     for i in range(1,4):
-        tela[i + linha_referencia][coluna_referencia-1] = '█'
-        tela[i + linha_referencia][coluna_referencia+3] = '█'
+        tela[i + linha_referencia][coluna_referencia-1] = '▣'
+        tela[i + linha_referencia][coluna_referencia+3] = '▣'
 
-    tela[2 + linha_referencia][coluna_referencia-2] = '█'
-    tela[2 + linha_referencia][coluna_referencia+4] = '█'
     
-    return tela
+    tela[2 + linha_referencia][coluna_referencia-2] = '▣'
+    tela[2 + linha_referencia][coluna_referencia+4] = '▣'
 
 #Gera o tiro na matriz
-def tiro(linha_inicio_tiro, numero_colunas, matriz_meteoro, projetil, centro_da_nave):
-
-    tela = matriz_meteoro
-    if projetil == True:
-        tela[linha_inicio_tiro][centro_da_nave] = 'o'
+    if tiro_on == True:
+        tela[linha_inicio_tiro][coluna_tiro] = 'o'
     
     return tela
 
 
 #printa a matriz que forma a tela
-def atualiza_tela(matriz_da_tela):
-    os.system('cls')
+def atualiza_tela(matriz_da_tela, pontuacao, vidas):
     tela = matriz_da_tela
+    print('Pontos: %d' %pontuacao)
+    print('Vidas: %d' %vidas)
     for linha in tela:
         print(''.join(linha))
-    sleep(0.03)
+    
+    sleep(0.09)
+    os.system('cls')
 
 
 def movimento_nave(centro_da_nave):
@@ -90,20 +80,26 @@ def movimento_nave(centro_da_nave):
 
     return centro_da_nave
 
-def projetil():
+def projetil(centro_da_nave, tiro_on, coluna_tiro):
 
     if keyboard.is_pressed('space'):
-        return True
-    
-    return False
+        
+        coluna_tiro = centro_da_nave
 
-def colisao(tiro, coluna_referencia, centro_da_nave):
+        tiro_on = True
+    
+    return coluna_tiro, tiro_on
+
+def colisao(tiro_on, linha_inicio_tiro, coluna_tiro, matriz_da_tela, contador_meteoro, linha_inicio_meteoro, numero_linhas, centro_da_nave, posicao_aleatoria_meteoro):
     
     #Colisao do tiro
-    if tiro == True:
-        for i in range (coluna_referencia - 2, coluna_referencia + 5): #verifica se o tiro acertou a hitbox do meteoro
-            if centro_da_nave == i:
-                
-                colisao_tiro = True
-                
-                return colisao_tiro
+    if tiro_on == True and matriz_da_tela[linha_inicio_tiro][coluna_tiro] == '▣':
+        contador_meteoro = 0
+        return True
+    
+    for linha in matriz_da_tela:
+        if matriz_da_tela[numero_linhas-3][centro_da_nave] != '█' and matriz_da_tela[numero_linhas-3][centro_da_nave] != ' ':
+            print('Abacaxi é top')
+            return exit()
+    return False
+    

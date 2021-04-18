@@ -1,53 +1,71 @@
-from tela import*
-import os        
 from time import sleep
+from tela import *
+import os
 import keyboard
 
-centro_da_nave = (63 // 2) + 1
-
-def principal(centro_da_nave):
-    game_on = True
-    linhas = 25
-    colunas = 63
-    linha_inicio_tiro = linhas - 4
-    
-    linha_final_meteoro = linhas - 4
-   
-    posicao_inicial_meteoro = posicao_aleatoria_meteoro(colunas)
-
-    movimento = 0
-    inicio_meteoro = 0
-
-    for movimento in range(0, linhas):
-
-        clock = movimento % 5
-
-        matriz_vazia = gera_matriz(linhas, colunas) #Gera matriz mazia
-        centro_da_nave = movimento_nave(centro_da_nave) #retorna a posicao da nave a cada mudança
-        posicao_tiro = centro_da_nave
-        tela_nave = nave(linhas, colunas, matriz_vazia, centro_da_nave) # Gera a nave na tela
-        # controle_tiro = projetil() #Controla o tiro
-
-        if clock == 0:
-
-            inicio_meteoro = movimento
-            tela_final = meteoros(linhas, colunas, tela_nave, posicao_inicial_meteoro, inicio_meteoro) #Gera o meteoro na tela
-
-            atualiza_tela(tela_final) #Imprime a ultima tela
-            sleep(0.9)
-            
-        
-        if 0 <= clock:
-            if linha_inicio_tiro > 1:
-
-                tela_tiro = tiro(linha_inicio_tiro, colunas, tela_final, projetil(),posicao_tiro) #Gera o tiro na tela
-
-                linha_inicio_tiro -= movimento
-
-                atualiza_tela(tela_final) #Imprime a ultima tela
-    
-    return centro_da_nave
-            
+linhas = 34
+colunas = 35
+centro_nave = colunas // 2 +1
+linha_referencia_meteoro = 0
+tiro_on = False
+coluna_tiro = 0
+pontuacao = 0
+vidas = 10
 
 while True:
-    centro_da_nave = principal(centro_da_nave)
+    linha_inico_tiro = linhas - 3
+    contador_geral = 0
+    contador_meteoro = 0
+    contador_tiro = 0
+    posicao = posicao_aleatoria_meteoro(colunas)
+
+    while contador_geral >= 0:
+        
+        matriz_tela = objetos(linhas, colunas, centro_nave, posicao, linha_referencia_meteoro, linha_inico_tiro, tiro_on, coluna_tiro)
+        
+        atualiza_tela(matriz_tela, pontuacao, vidas)
+
+        centro_nave = movimento_nave(centro_nave)
+
+        (coluna_tiro,tiro_on) = projetil(centro_nave, tiro_on, coluna_tiro)
+
+        if tiro_on:
+            if linha_inico_tiro > 1:
+                linha_inico_tiro -= contador_tiro
+                
+                
+            else:
+                tiro_on = False
+                linha_inico_tiro = linhas - 3
+                contador_tiro = 0
+            
+        
+        linha_referencia_meteoro = contador_meteoro
+
+        if colisao(tiro_on, linha_inico_tiro, coluna_tiro, matriz_tela,contador_meteoro, linha_referencia_meteoro, linhas, centro_nave, posicao):
+            tiro_on = False
+            contador_geral = 0
+            contador_meteoro = 0
+            contador_tiro = 0
+            sleep(0.1)
+            pontuacao +=10
+            break
+
+        clock_meteoro = contador_geral //2
+        
+        if clock_meteoro == 0:
+            contador_meteoro +=1
+        
+        contador_tiro +=1
+
+        if contador_meteoro > linhas-5: # Evita que meteoro saia do range
+            contador_meteoro = 0
+            vidas -= 1
+        
+        if vidas == 0 or keyboard.is_pressed('esc'):
+            print('Game Over')
+            exit()
+        
+
+        if contador_geral > 40: # Reseta o contador para evitar aumento infinito
+            contador_geral = 0
