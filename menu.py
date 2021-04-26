@@ -91,24 +91,23 @@ def controles(contador_selecionar):
 
 contador = 0 #Contador do menu
 
-record = []
+record = [] #Guarda o nome e a pontuação dos jogadores
 while True:
     contador = controles(contador)
     menu(contador)
 
     #Inicia partida caso o usuario selecione "Jogar"
     if keyboard.is_pressed('enter') and menu(contador) == 0:
-        sleep(0.1)
         (nome, pontuacao) = game()
         dados = (nome, pontuacao)
         record.append(dados)
     
     #Mostra os recordes caso o usuario selecione "Recordes"
     elif keyboard.is_pressed('enter') and menu(contador) == 1:
-        while not keyboard.is_pressed('Esc'):
+        while not keyboard.is_pressed('Esc'): #Caso o usuario aperte "Esc" retorna ao menu
             try:
                 os.system('cls')
-                recordes_ordenados = recorde(nome, pontuacao,record)
+                recordes_ordenados = recorde(nome, pontuacao,record) #Ordena os recordes do maior para o menor
                 print('''
   ___                   _        
  | _ \___ __ ___ _ _ __| |___ ___
@@ -123,7 +122,8 @@ while True:
                 print('\nPressione "Esc" para retornar ao Menu')
                 sleep(1)
             
-            except NameError:
+            #Caso a lista esteja vazia e a função de ordenar retorne um NameError indica que não há recods cadastrados
+            except NameError: 
                 os.system('cls')
                 print('''
   ___                   _        
@@ -142,8 +142,7 @@ while True:
 
     #Mostra o sobre caso o usuario selecione "Sobre"        
     elif keyboard.is_pressed('enter') and menu(contador) == 2:
-        sleep(0.1)
-        while not keyboard.is_pressed('esc'):
+        while not keyboard.is_pressed('esc'): #Caso o usuario aperte "Esc" retorna ao menu
             os.system('cls')
             print('''
  __ _     _     _  _  __
@@ -171,5 +170,5 @@ while True:
     #Sai do programa cso o usuario selecione sair
     elif keyboard.is_pressed('enter') and menu(contador) == 3:
         print('\n Até a próxima\n')
-        sleep(10)
+        sleep(5)
         exit()

@@ -51,7 +51,7 @@ def objetos(numero_linhas, numero_colunas, centro_da_nave, posicao_aleatoria_met
     
     #Gera o tiro na matriz
     if tiro_on == True:
-        tela[linha_inicio_tiro][coluna_tiro] = 'o'
+        tela[linha_inicio_tiro][coluna_tiro] = 'o' #Gera o caractere do projetil na matriz
         
     coluna_referencia = posicao_aleatoria_meteoro-1 #coluna utilizada para gerar a hitbox do meteoro
     
