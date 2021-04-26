@@ -2,7 +2,7 @@
 ******************************************************************************************
 Autor: Gabriel Cordeiro Moraes
 Componente Curricular: EXA854 - MI - Algoritmos
-Concluido em: 20/03/2021
+Concluido em: 26/04/2021
 Declaro que este código foi elaborado por mim de forma individual e não contém nenhum
 trecho de código de outro colega ou de outro autor, tais como provindos de livros e
 apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código
@@ -15,7 +15,9 @@ import os
 from time import sleep
 from game import *
 
-os.system("mode con: cols=45 lines=37")
+os.system("mode con: cols=45 lines=37") #Limita o tamanho da janela do terminal
+
+#Cria a matriz do menu
 def menu(contador_selecionar):
     tela_menu = []
     vazio = str(' ')
@@ -27,10 +29,10 @@ def menu(contador_selecionar):
         tela_menu.append(linha)
 
 
-    tela_menu[0][1] = 'Jogar'
-    tela_menu[1][1] = 'Recordes'
-    tela_menu[2][1] = 'Sobre'
-    tela_menu[3][1] = 'Sair'
+    tela_menu[0][1] = 'JOGAR'
+    tela_menu[1][1] = 'RECORDES'
+    tela_menu[2][1] = 'SOBRE'
+    tela_menu[3][1] = 'SAIR'
 
     tela_menu[contador_selecionar][0] = '>'
     tela_menu[contador_selecionar][2] = '<'
@@ -45,12 +47,34 @@ def menu(contador_selecionar):
     for linha in tela_menu:
         print(''.join(linha))
     
+    print('''
+        _..._
+      .'     '.      _
+     /    .-""-\   _/ \\
+   .-|   /:.   |  |   |
+   |  \  |:.   /.-'-./
+   | .-'-;:__.'    =/
+   .'=  *=|ECOMP_.='
+  /   _.  |    ;
+ ;-.-'|    \   |
+/   | \    _\  _\\
+\__/'._;.  ==' ==\\
+         \    \   |
+         /    /   /
+         /-._/-._/
+         \   `\  \\
+          `-._/._/''')
+    
+    print('Art by: jgs')
+    
     sleep(0.1)
     os.system('cls')
     return contador_selecionar
 
+
 def controles(contador_selecionar):
 
+    #Controla e movimenta a seleção do menu
     if keyboard.is_pressed('down'):
         contador_selecionar+=1
         if contador_selecionar > 3:
@@ -65,19 +89,21 @@ def controles(contador_selecionar):
     return contador_selecionar
 
 
-contador = 0
+contador = 0 #Contador do menu
 
 record = []
 while True:
     contador = controles(contador)
     menu(contador)
 
+    #Inicia partida caso o usuario selecione "Jogar"
     if keyboard.is_pressed('enter') and menu(contador) == 0:
         sleep(0.1)
         (nome, pontuacao) = game()
         dados = (nome, pontuacao)
         record.append(dados)
     
+    #Mostra os recordes caso o usuario selecione "Recordes"
     elif keyboard.is_pressed('enter') and menu(contador) == 1:
         while not keyboard.is_pressed('Esc'):
             try:
@@ -91,10 +117,10 @@ while True:
                                  
 ''')
                 for i in range(len(recordes_ordenados)):
-                    if i <= 5:
-                        print(recordes_ordenados[i])
+                    if i < 5: #Garante que o print seja dos 5 primeiros colocados
+                        print(recordes_ordenados[i][0],'-----',recordes_ordenados[i][1])
                 
-                print('Pressione "Esc" para continuar')
+                print('\nPressione "Esc" para retornar ao Menu')
                 sleep(1)
             
             except NameError:
@@ -107,12 +133,14 @@ while True:
                                  
 ''')
                 print('Não existe puntuação ainda.')
+                print('\nPressione "Esc" para retornar ao Menu')
                 sleep(1)
                 
         
         if keyboard.is_pressed('esc'):
             keyboard.press('esc')
-            
+
+    #Mostra o sobre caso o usuario selecione "Sobre"        
     elif keyboard.is_pressed('enter') and menu(contador) == 2:
         sleep(0.1)
         while not keyboard.is_pressed('esc'):
@@ -126,7 +154,7 @@ while True:
             print('Left: Move a nave para esquerda\n')
             print('Right: Move a nave para a direita\n')
             print('Space: Dispara um projétil\n')
-            print('Esc: Finaliza a partida\n')
+            print('Esc: Voltar/finalizar a partida\n')
             print('''                 *       +
            '                  |
        ()    .-.,="``"=.    - o -
@@ -136,9 +164,12 @@ while True:
             .   '=.__.=' `='      *
    +                         +
         O      *        '       ''')
-            print('By: Gabriel Moraes')
+            print('Art by: jgs')
+            print('\nGame By: Gabriel Moraes')
             sleep(1)
     
+    #Sai do programa cso o usuario selecione sair
     elif keyboard.is_pressed('enter') and menu(contador) == 3:
-        sleep(0.1)
+        print('\n Até a próxima\n')
+        sleep(10)
         exit()

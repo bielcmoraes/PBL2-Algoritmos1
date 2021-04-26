@@ -2,7 +2,7 @@
 ******************************************************************************************
 Autor: Gabriel Cordeiro Moraes
 Componente Curricular: EXA854 - MI - Algoritmos
-Concluido em: 20/03/2021
+Concluido em: 26/04/2021
 Declaro que este código foi elaborado por mim de forma individual e não contém nenhum
 trecho de código de outro colega ou de outro autor, tais como provindos de livros e
 apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código
@@ -17,16 +17,17 @@ import keyboard
 
 def game():
 
-    linhas = 34
-    colunas = 35
-    centro_nave = colunas // 2 +1
-    linha_referencia_meteoro = 0
+    linhas = 34 #Número de linhas da matriz da tela
+    colunas = 35 #Número de colunas da matriz
+    centro_nave = colunas // 2 +1 #Gera a nave no centro da tela no inicio da partida
+    # linha_referencia_meteoro = 0 #Gera o primeiro meteoro da partida na primeira linha
     tiro_on = False
     coluna_tiro = 0
     pontuacao = 0
-    vidas = 10
+    vidas = 0
 
     while True:
+        linha_referencia_meteoro = 0
         linha_inico_tiro = linhas - 3
         contador_geral = 0
         contador_meteoro = 0
@@ -56,13 +57,11 @@ def game():
             sleep(0.2)
             linha_referencia_meteoro = contador_meteoro
 
-            (colisao_tiro, vidas)= colisao(tiro_on, linha_inico_tiro, coluna_tiro, matriz_tela,contador_meteoro, linha_referencia_meteoro, linhas, centro_nave, posicao,vidas)
+            (colisao_tiro, vidas)= colisao(tiro_on, linha_inico_tiro, coluna_tiro, matriz_tela,contador_meteoro, linha_referencia_meteoro, linhas, colunas, centro_nave, posicao,vidas)
             if colisao_tiro:
                 tiro_on = False
-                # contador_geral = 0
                 contador_meteoro = 0
                 contador_tiro = 0
-                # sleep(0.1)
                 pontuacao +=10
                 break
 
@@ -75,9 +74,10 @@ def game():
 
             if contador_meteoro > linhas-5: # Evita que meteoro saia do range
                 contador_meteoro = 0
-                vidas -= 1
+                vidas += 1
+                break
             
-            if vidas == 0 or keyboard.is_pressed('esc'):
+            if vidas >= 10 or keyboard.is_pressed('esc'):
                 keyboard.press('esc')
                 os.system('cls')
                 print('''
@@ -99,8 +99,9 @@ def game():
                                     
     ''')  
                 desbugar = 'abacaxi'
+                print('Pressione "Enter" para continuar')
                 while desbugar != '321':
-                    input('Pressione "Enter" para continuar')
+                    input('')
                     if keyboard.is_pressed('enter'):
                         desbugar = '321'
                 nome = input('Digite seu nome: ')
