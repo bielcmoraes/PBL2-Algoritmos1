@@ -10,96 +10,106 @@ de outra autoria que não a minha está destacado com uma citação para o autor
 do código, e estou ciente que estes trechos não serão considerados para fins de avaliação.
 ******************************************************************************************
 '''
-
 from time import sleep
 from tela import *
 import os
 import keyboard
 
-linhas = 34
-colunas = 35
-centro_nave = colunas // 2 +1
-linha_referencia_meteoro = 0
-tiro_on = False
-coluna_tiro = 0
-pontuacao = 0
-vidas = 10
+def game():
 
-while True:
-    linha_inico_tiro = linhas - 3
-    contador_geral = 0
-    contador_meteoro = 0
-    contador_tiro = 0
-    posicao = posicao_aleatoria_meteoro(colunas)
+    linhas = 34
+    colunas = 35
+    centro_nave = colunas // 2 +1
+    linha_referencia_meteoro = 0
+    tiro_on = False
+    coluna_tiro = 0
+    pontuacao = 0
+    vidas = 10
 
-    while contador_geral >= 0:
-        
-        matriz_tela = objetos(linhas, colunas, centro_nave, posicao, linha_referencia_meteoro, linha_inico_tiro, tiro_on, coluna_tiro)
-        
-        atualiza_tela(matriz_tela, pontuacao, vidas)
+    while True:
+        linha_inico_tiro = linhas - 3
+        contador_geral = 0
+        contador_meteoro = 0
+        contador_tiro = 0
+        posicao = posicao_aleatoria_meteoro(colunas)
 
-        centro_nave = movimento_nave(centro_nave)
+        while contador_geral >= 0:
+            
+            matriz_tela = objetos(linhas, colunas, centro_nave, posicao, linha_referencia_meteoro, linha_inico_tiro, tiro_on, coluna_tiro)
+            
+            atualiza_tela(matriz_tela, pontuacao, vidas)
 
-        (coluna_tiro,tiro_on) = projetil(centro_nave, tiro_on, coluna_tiro)
+            centro_nave = movimento_nave(centro_nave)
 
-        if tiro_on:
-            if linha_inico_tiro > 1:
-                linha_inico_tiro -= contador_tiro
+            (coluna_tiro,tiro_on) = projetil(centro_nave, tiro_on, coluna_tiro)
+
+            if tiro_on:
+                if linha_inico_tiro > 1:
+                    linha_inico_tiro -= contador_tiro
+                    
+                    
+                else:
+                    tiro_on = False
+                    linha_inico_tiro = linhas - 3
+                    contador_tiro = 0
                 
-                
-            else:
+            sleep(0.2)
+            linha_referencia_meteoro = contador_meteoro
+
+            (colisao_tiro, vidas)= colisao(tiro_on, linha_inico_tiro, coluna_tiro, matriz_tela,contador_meteoro, linha_referencia_meteoro, linhas, centro_nave, posicao,vidas)
+            if colisao_tiro:
                 tiro_on = False
-                linha_inico_tiro = linhas - 3
+                # contador_geral = 0
+                contador_meteoro = 0
                 contador_tiro = 0
+                # sleep(0.1)
+                pontuacao +=10
+                break
+
+            clock_meteoro = contador_geral //2
             
-        sleep(0.2)
-        linha_referencia_meteoro = contador_meteoro
+            if clock_meteoro == 0:
+                contador_meteoro +=1
+            
+            contador_tiro +=1
 
-        (colisao_tiro, vidas)= colisao(tiro_on, linha_inico_tiro, coluna_tiro, matriz_tela,contador_meteoro, linha_referencia_meteoro, linhas, centro_nave, posicao,vidas)
-        if colisao_tiro:
-            tiro_on = False
-            # contador_geral = 0
-            contador_meteoro = 0
-            contador_tiro = 0
-            # sleep(0.1)
-            pontuacao +=10
-            break
-
-        clock_meteoro = contador_geral //2
-        
-        if clock_meteoro == 0:
-            contador_meteoro +=1
-        
-        contador_tiro +=1
-
-        if contador_meteoro > linhas-5: # Evita que meteoro saia do range
-            contador_meteoro = 0
-            vidas -= 1
-        
-        if vidas == 0 or keyboard.is_pressed('esc'):
-            keyboard.press('esc')
-            os.system('cls')
-            print('''
- ██████╗  █████╗ ███╗   ███╗███████╗
-██╔════╝ ██╔══██╗████╗ ████║██╔════╝
-██║  ███╗███████║██╔████╔██║█████╗  
-██║   ██║██╔══██║██║╚██╔╝██║██╔══╝  
-╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗
- ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
+            if contador_meteoro > linhas-5: # Evita que meteoro saia do range
+                contador_meteoro = 0
+                vidas -= 1
+            
+            if vidas == 0 or keyboard.is_pressed('esc'):
+                keyboard.press('esc')
+                os.system('cls')
+                print('''
+    ██████╗  █████╗ ███╗   ███╗███████╗
+    ██╔════╝ ██╔══██╗████╗ ████║██╔════╝
+    ██║  ███╗███████║██╔████╔██║█████╗  
+    ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝  
+    ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗
+    ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝
+                                        
+    ''')
+                print('''
+    ██████╗ ██╗   ██╗███████╗██████╗ 
+    ██╔═══██╗██║   ██║██╔════╝██╔══██╗
+    ██║   ██║██║   ██║█████╗  ██████╔╝
+    ██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗
+    ╚██████╔╝ ╚████╔╝ ███████╗██║  ██║
+    ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝
                                     
-''')
-            print('''
- ██████╗ ██╗   ██╗███████╗██████╗ 
-██╔═══██╗██║   ██║██╔════╝██╔══██╗
-██║   ██║██║   ██║█████╗  ██████╔╝
-██║   ██║╚██╗ ██╔╝██╔══╝  ██╔══██╗
-╚██████╔╝ ╚████╔╝ ███████╗██║  ██║
- ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═╝
-                                  
-''')
-            input('Digite seu nome: ')
-            
-        
+    ''')  
+                desbugar = 'abacaxi'
+                while desbugar != '321':
+                    input('Pressione "Enter" para continuar')
+                    if keyboard.is_pressed('enter'):
+                        desbugar = '321'
+                nome = input('Digite seu nome: ')
+                return nome , pontuacao
 
-        if contador_geral > 40: # Reseta o contador para evitar aumento infinito
-            contador_geral = 0
+            if contador_geral > 40: # Reseta o contador para evitar aumento infinito
+                contador_geral = 0
+
+
+def recorde(nome, pontuacao, record):
+    valores_ordenados = sorted(record, key = lambda item:item[1], reverse = True)
+    return valores_ordenados
